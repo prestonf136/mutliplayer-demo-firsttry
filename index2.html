@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Server</title>
+    </head>
+    <body>
+        <style>
+            .box {
+                width: 20px;
+                height: 20px;
+                margin: 5px;
+                border: 1px solid rgba(0, 0, 0, .2);
+                position: absolute;
+                background: #e74c3c;
+            }
+
+            .box2 {
+                width: 20px;
+                height: 20px;
+                margin: 5px;
+                border: 1px solid rgba(0, 0, 0, .2);
+                position: absolute;
+                background: #13b4ff;
+            }
+        </style>
+            <div class="box"></div>
+            <div class="box2"></div>
+        <script>
+            let w = false; 
+            let a = false;
+            let s = false;
+            let d = false;
+            let test1 = 0;
+            document.onkeydown = function(e) {
+                switch(e.keyCode) {
+                    case 87:
+                        w = true;
+                        break;
+                    case 83:
+                        s = true;
+                        break;
+                    case 65:
+                        a = true;
+                        break;
+                    case 68:
+                        d = true;
+                        break;
+                }
+            };
+            document.onkeyup = function(e) {
+                switch(e.keyCode) {
+                    case 87:
+                        w = false;
+                        break;
+                    case 83:
+                        s = false;
+                        break;
+                    case 65:
+                        a = false;
+                        break;
+                    case 68:
+                        d = false;
+                        break;
+                }
+            }
+
+
+            let box = document.querySelector(".box")
+            let box2 = document.querySelector(".box2")
+
+            const socket = new WebSocket('ws://localhost:8080');
+            socket.addEventListener("connection", () => {
+                console.log("connected");
+            });
+
+            socket.addEventListener('message', function (event) {
+                let dataparsed = JSON.parse(event.data);
+                let dataparsed2 = parseInt(dataparsed.id2.position);
+                dataparsed = parseInt(dataparsed.id1.position);
+                
+                
+                box.style.left = dataparsed2+"px";
+                box2.style.left = dataparsed+"px";
+                if(a ==  true) {
+                    --test1
+                    box.style.left = test1+"px";
+                }
+                if(d ==  true) {
+                    
+                    box.style.left = test1+"px";
+                    test1++
+                }
+                socket.send("id2|"+test1);
+            });
+        </script>
+    </body>
+</html>
